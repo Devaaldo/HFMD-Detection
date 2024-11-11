@@ -1,126 +1,134 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <title>HFMD Detection System</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
-            text-align: center;
-            background-color: #f5f5f5;
-        }
-        .container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        .result-container {
-            margin-top: 20px;
-            text-align: left;
-            padding: 20px;
-            border-radius: 8px;
-        }
-        .image-container {
-            margin: 20px 0;
-        }
-        .image-container img {
-            max-width: 400px;
-            max-height: 400px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        .upload-form {
-            margin: 20px 0;
-            padding: 20px;
-            border: 2px dashed #ccc;
-            border-radius: 8px;
-        }
-        .result-title {
-            font-size: 24px;
-            font-weight: bold;
-            margin: 10px 0;
-            color: #2c3e50;
-        }
-        .confidence {
-            color: #666;
-            font-size: 18px;
-            margin-bottom: 20px;
-        }
-        .error {
-            color: red;
-            margin: 10px 0;
-            padding: 10px;
-            background-color: #ffe6e6;
-            border-radius: 5px;
-        }
-        .severity {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-        .severity.tinggi {
-            background-color: #ff4444;
-            color: white;
-        }
-        .severity.sedang {
-            background-color: #ffbb33;
-            color: white;
-        }
-        .severity.ringan {
-            background-color: #00C851;
-            color: white;
-        }
-        .severity.normal {
-            background-color: #33b5e5;
-            color: white;
-        }
-        .description {
-            white-space: pre-line;
-            line-height: 1.6;
-            color: #444;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Sistem Deteksi HFMD</h1>
-        
-        <div class="upload-form">
-            <form method="post" enctype="multipart/form-data">
-                <input type="file" name="file" accept=".jpg,.jpeg,.png">
-                <input type="submit" value="Upload dan Deteksi">
-            </form>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HFMDetect</title>
+
+    <!-- Style Kak Bagas -->
+    <style></style>
+
+    <!-- My Style -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+
+    <!-- Boxicons CSS -->
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Fonts -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+  </head>
+  <body>
+    <nav class="sidebar close">
+      <header>
+        <div class="image-text">
+          <span class="image">
+            <img
+              src="{{ url_for('static', filename='images/UNJAYA LOGO.png') }}"
+              alt="logo"
+            />
+          </span>
+
+          <div class="text header-text">
+            <span class="name">HFMDetect</span>
+            <span class="univ">UNJAYA</span>
+          </div>
         </div>
 
-        {% if error %}
-        <div class="error">
-            {{ error }}
-        </div>
-        {% endif %}
+        <i class="bx bx-chevron-right toggle"></i>
+      </header>
 
-        {% if image_data %}
-        <div class="image-container">
-            <img src="data:image/jpeg;base64,{{ image_data }}" alt="Gambar yang Diunggah">
+      <div class="menu-bar">
+        <div class="menu">
+          <li class="search-box">
+            <i class="bx bx-search icon"></i>
+            <input type="search" placeholder="Search..." />
+          </li>
+          <ul class="menu-links">
+            <li class="nav-link">
+              <a href="#">
+                <i class="bx bx-home-alt icon"></i>
+                <span class="text nav-text">Dashboard</span>
+              </a>
+            </li>
+          </ul>
         </div>
-        {% endif %}
 
-        {% if detailed_result %}
-        <div class="result-container">
+        <div class="bottom-content">
+          <li class="mode">
+            <div class="moon-sun">
+              <i class="bx bx-moon icon moon"></i>
+              <i class="bx bx-sun icon sun"></i>
+            </div>
+            <span class="mode-text text">Dark Mode</span>
+
+            <div class="toggle-switch">
+              <span class="switch"> </span>
+            </div>
+          </li>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Upload Section -->
+    <section class="home">
+      <div class="text">Sistem Deteksi HFMD</div>
+      <div class="drag-area">
+        <div class="wrapper">
+          <header>Drop file to upload</header>
+          <form method="post" enctype="multipart/form-data">
+            <div>
+              <input
+                class="file-input"
+                type="file"
+                name="file"
+                accept=".jp, .jpeg, .png"
+                hidden
+              />
+              <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+          </form>
+          <section class="progress-area"></section>
+          <section class="uploaded-area"></section>
+          <button type="submit" id="submitButton" class="button">
+            Upload dan Deteksi
+          </button>
+        </div>
+      </div>
+      <div class="detection-area">
+        <div class="hasil">
+          <header>Hasil Deteksi</header>
+          {% if error %}
+          <div class="error">{{ error }}</div>
+          {% endif %} {% if image_data %}
+          <div class="image-container">
+            <img
+              src="data:image/jpeg;base64,{{ image_data }}"
+              alt="Gambar yang Diunggah"
+            />
+          </div>
+          {% endif %} {% if detailed_result %}
+          <div class="result-container">
             <div class="result-title">{{ detailed_result.title }}</div>
             <div class="confidence">Tingkat Keyakinan: {{ confidence }}</div>
             <div class="severity {{ detailed_result.severity }}">
-                Tingkat Keparahan: {{ detailed_result.severity|title }}
+              Tingkat Keparahan: {{ detailed_result.severity|title }}
             </div>
-            <div class="description">
-                {{ detailed_result.description }}
-            </div>
+            <div class="description">{{ detailed_result.description }}</div>
+          </div>
+          {% endif %}
         </div>
-        {% endif %}
-    </div>
-</body>
+      </div>
+    </section>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+  </body>
 </html>

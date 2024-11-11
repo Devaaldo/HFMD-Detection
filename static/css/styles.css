@@ -384,6 +384,8 @@ body.dark .switch::before {
   border-radius: 5px;
   padding: 30px;
   box-shadow: 7px 7px 12px rgba(0, 0, 0, 0.05);
+  flex-direction: column;
+  align-items: center;
 }
 .wrapper header {
   color: var(--text-upload);
@@ -402,6 +404,91 @@ body.dark .switch::before {
   border-radius: 5px;
   border: 2px dashed var(--text-upload);
 }
+
+.button {
+  position: relative;
+  padding: 10px 22px;
+  border-radius: 6px;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  background-color: #7d2ae8;
+  transition: all 0.2s ease;
+  align-self: center;
+}
+
+.button:active {
+  transform: scale(0.96);
+}
+.button:before,
+.button:after {
+  position: absolute;
+  content: "";
+  width: 150%;
+  left: 50%;
+  height: 100%;
+  transform: translateX(-50%);
+  z-index: -1000;
+  background-repeat: no-repeat;
+}
+.button.animate::before {
+  top: -70%;
+  background-image: radial-gradient(circle, #7d2ae8 20%, transparent 20%),
+    radial-gradient(circle, transparent 20%, #7d2ae8 20%, transparent 30%),
+    radial-gradient(circle, #7d2ae8 20%, transparent 20%),
+    radial-gradient(circle, #7d2ae8 20%, transparent 20%),
+    radial-gradient(circle, transparent 10%, #7d2ae8 15%, transparent 20%),
+    radial-gradient(circle, #7d2ae8 20%, transparent 20%),
+    radial-gradient(circle, #7d2ae8 20%, transparent 20%),
+    radial-gradient(circle, #7d2ae8 20%, transparent 20%),
+    radial-gradient(circle, #7d2ae8 20%, transparent 20%);
+  background-size: 10% 10%, 20% 20%, 15% 15%, 20% 20%, 18% 18%, 10% 10%, 15% 15%,
+    10% 10%, 18% 18%;
+  animation: greentopBubbles ease-in-out 0.6s forwards infinite;
+}
+@keyframes greentopBubbles {
+  0% {
+    background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%,
+      40% 90%, 55% 90%, 70% 90%;
+  }
+  50% {
+    background-position: 0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%, 22% 50%,
+      50% 50%, 65% 20%, 90% 30%;
+  }
+  100% {
+    background-position: 0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%,
+      50% 40%, 65% 10%, 90% 20%;
+    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+  }
+}
+.button.animate::after {
+  bottom: -70%;
+  background-image: radial-gradient(circle, #7d2ae8 20%, transparent 20%),
+    radial-gradient(circle, #7d2ae8 20%, transparent 20%),
+    radial-gradient(circle, transparent 10%, #7d2ae8 15%, transparent 20%),
+    radial-gradient(circle, #7d2ae8 20%, transparent 20%),
+    radial-gradient(circle, #7d2ae8 20%, transparent 20%),
+    radial-gradient(circle, #7d2ae8 20%, transparent 20%),
+    radial-gradient(circle, #7d2ae8 20%, transparent 20%);
+  background-size: 15% 15%, 20% 20%, 18% 18%, 20% 20%, 15% 15%, 20% 20%, 18% 18%;
+  animation: greenbottomBubbles ease-in-out 0.6s forwards infinite;
+}
+@keyframes greenbottomBubbles {
+  0% {
+    background-position: 10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%,
+      70% -10%, 70% 0%;
+  }
+  50% {
+    background-position: 0% 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%,
+      105% 0%;
+  }
+  100% {
+    background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%,
+      110% 10%;
+    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+  }
+}
+
 form :where(i, p) {
   color: var(--text-upload);
 }
@@ -515,4 +602,147 @@ section .details span {
   flex-direction: column;
   border-radius: 5px;
   border: 2px dashed var(--text-upload);
+}
+
+/* Kak Bagas */
+
+.container {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.result-container {
+  margin-top: 20px;
+  text-align: left;
+  padding: 20px;
+  border-radius: 8px;
+}
+.image-container {
+  margin: 20px 0;
+}
+.image-container img {
+  max-width: 400px;
+  max-height: 400px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.upload-form {
+  margin: 20px 0;
+  padding: 20px;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+}
+.result-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 10px 0;
+  color: #2c3e50;
+}
+.confidence {
+  color: #666;
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+.error {
+  color: red;
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #ffe6e6;
+  border-radius: 5px;
+}
+.severity {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  margin: 10px 0;
+}
+.severity.tinggi {
+  background-color: #ff4444;
+  color: white;
+}
+.severity.sedang {
+  background-color: #ffbb33;
+  color: white;
+}
+.severity.ringan {
+  background-color: #00c851;
+  color: white;
+}
+.severity.normal {
+  background-color: #33b5e5;
+  color: white;
+}
+.description {
+  white-space: pre-line;
+  line-height: 1.6;
+  color: #444;
+}
+
+.image-container {
+  margin: 20px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.image-container img {
+  max-width: 400px;
+  max-height: 400px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.result-container {
+  margin-top: 20px;
+  text-align: left;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.result-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 10px 0;
+  color: #2c3e50;
+}
+.confidence {
+  color: #666;
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+.error {
+  color: red;
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #ffe6e6;
+  border-radius: 5px;
+}
+.severity {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  margin: 10px 0;
+}
+.severity.tinggi {
+  background-color: #ff4444;
+  color: white;
+}
+.severity.sedang {
+  background-color: #ffbb33;
+  color: white;
+}
+.severity.ringan {
+  background-color: #00c851;
+  color: white;
+}
+.severity.normal {
+  background-color: #33b5e5;
+  color: white;
+}
+.description {
+  white-space: pre-line;
+  line-height: 1.6;
+  color: #444;
 }
