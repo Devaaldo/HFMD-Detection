@@ -1,0 +1,4 @@
+id,nama_file,result_type,confidence,severity
+DETECT_20241111231330,20241111231328_test3.png,Non-HFMD,2.99%,normal
+DETECT_20241111232330,20241111232328_hfmd-rash__2.jpg,Non-HFMD,29.90%,normal
+DETECT_20241111233004,20241111233004_hfmd-rash__17.jpg,HFMD,68.02%,ringan
