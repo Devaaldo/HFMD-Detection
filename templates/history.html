@@ -1,81 +1,115 @@
+<!-- templates/index.html -->
 <!DOCTYPE html>
-<html>
-<head>
-    <title>CSV Data</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .data-list {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        .data-item {
-            display: flex;
-            align-items: center;
-            border: 1px solid #ddd;
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        .data-item img {
-            max-width: 150px;
-            max-height: 150px;
-            margin-right: 20px;
-            border-radius: 8px;
-        }
-        .text-content {
-            font-size: 16px;
-        }
-        .text-content p {
-            margin: 5px 0;
-        }
-        .severity {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-        .severity.tinggi {
-            background-color: #ff4444;
-            color: white;
-        }
-        .severity.sedang {
-            background-color: #ffbb33;
-            color: white;
-        }
-        .severity.ringan {
-            background-color: #00C851;
-            color: white;
-        }
-        .severity.normal {
-            background-color: #33b5e5;
-            color: white;
-        }
-    </style>
-</head>
-<body>
-    <h1>History</h1>
-    <div class="data-list">
-        {% for row in data %}
-        <div class="data-item">
-            <img src="{{ url_for('static', filename='uploads/' + row['nama_file']) }}" alt="{{ row['id'] }}">
-            <div class="text-content">
-                <p><strong>Result Type:</strong> {{ row['result_type'] }}</p>
-                <p><strong>Confidence:</strong> {{ row['confidence'] }}</p>
-                <p>
-                    <strong>Severity:</strong> 
-                    <span class="severity {{ row['severity']|lower }}">
-                        {{ row['severity'] }}
-                    </span>
-                </p>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-</body>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>HFMDetect|History</title>
+
+		<!-- My Style -->
+		<link
+			rel="stylesheet"
+			href="{{ url_for('static', filename='css/styles.css') }}"
+		/>
+
+		<!-- Boxicons CSS -->
+		<link
+			href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+			rel="stylesheet"
+		/>
+
+		<!-- Fonts -->
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+		/>
+	</head>
+	<body>
+		<nav class="sidebar close">
+			<header>
+				<div class="image-text">
+					<span class="image">
+						<img
+							src="{{ url_for('static', filename='images/logo tsdn.png') }}"
+							alt="logo"
+						/>
+					</span>
+
+					<div class="text header-text">
+						<span class="name">HFMDetect</span>
+					</div>
+				</div>
+
+				<i class="bx bx-chevron-right toggle"></i>
+			</header>
+
+			<div class="menu-bar">
+				<div class="menu">
+					<li class="search-box">
+						<i class="bx bx-search icon"></i>
+						<input type="search" placeholder="Search..." />
+					</li>
+					<ul class="menu-links">
+						<li class="nav-link">
+							<a href="{{ url_for('index') }}">
+								<i class="bx bx-home-alt icon"></i>
+								<span class="text nav-text">Home Detect</span>
+							</a>
+						</li>
+						<li class="nav-link">
+							<a href="{{ url_for('history') }}">
+								<i class="bx bx-history icon"></i>
+								<span class="text nav-text">History</span>
+							</a>
+						</li>
+					</ul>
+				</div>
+
+				<div class="bottom-content">
+					<li class="mode">
+						<div class="moon-sun">
+							<i class="bx bx-moon icon moon"></i>
+							<i class="bx bx-sun icon sun"></i>
+						</div>
+						<span class="mode-text text">Dark Mode</span>
+
+						<div class="toggle-switch">
+							<span class="switch"> </span>
+						</div>
+					</li>
+				</div>
+			</div>
+		</nav>
+
+		<!-- Upload Section -->
+		<section class="home">
+			<div class="text">History</div>
+			<div class="data-history">
+				<div class="hasil">
+					<div class="data-list">
+						{% for row in data %}
+						<div class="data-item">
+							<img
+								src="{{ url_for('static', filename='uploads/' + row['nama_file']) }}"
+								alt="{{ row['id'] }}"
+							/>
+							<div class="text-content">
+								<p><strong>Result Type:</strong> {{ row['result_type'] }}</p>
+								<p><strong>Confidence:</strong> {{ row['confidence'] }}</p>
+								<p>
+									<strong>Severity:</strong>
+									<span class="severity {{ row['severity']|lower }}">
+										{{ row['severity'] }}
+									</span>
+								</p>
+							</div>
+						</div>
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+	</body>
 </html>

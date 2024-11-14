@@ -8,11 +8,12 @@ from werkzeug.utils import secure_filename
 import base64
 from io import BytesIO
 from PIL import Image
+import csv
 
 app = Flask(__name__)
 
 # Configuration
-UPLOAD_FOLDER = 'uploads'
+UPLOAD_FOLDER = 'static/uploads'
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
@@ -21,6 +22,9 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 # Load the model
 model = tf.keras.models.load_model('./static/my_model.h5')
+
+# CSV file path
+RESULT_CSV_FILE = './static/hfmd_detection_results.csv'
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -79,6 +83,33 @@ def get_hfmd_explanation(confidence):
     }
     return explanation
 
+def save_detection_result(filename, result_type, confidence, severity):
+    # Generate a unique ID for the detection
+    detection_id = f"DETECT_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+
+    # Check if the CSV file exists
+    file_exists = os.path.isfile(RESULT_CSV_FILE)
+
+    # Open the CSV file in append mode
+    with open(RESULT_CSV_FILE, mode='a', newline='') as csvfile:
+        fieldnames = ['id', 'filename', 'result_type', 'confidence', 'severity']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        # Write the header if the file is new
+        if not file_exists:
+            writer.writeheader()
+
+        # Write the detection result to the CSV
+        writer.writerow({
+            'id': detection_id,
+            'filename': filename,
+            'result_type': result_type,
+            'confidence': confidence,
+            'severity': severity
+        })
+
+    print(f"Detection result saved to {RESULT_CSV_FILE}")
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -104,13 +135,16 @@ def index():
             predicted_class = (predictions >= 0.5).astype(int)[0][0]
             confidence = predictions[0][0]
 
-            # Get the encoded image for display
-            encoded_img = get_encoded_img(filepath)
-
             # Get detailed explanation based on prediction
             explanation = get_hfmd_explanation(confidence)
             result_type = 'HFMD' if predicted_class == 1 else 'Non-HFMD'
             detailed_result = explanation[result_type]
+
+            # Save the detection result to the CSV
+            save_detection_result(file_up_name, result_type, f"{confidence * 100:.2f}%", detailed_result['severity'])
+
+            # Get the encoded image for display
+            encoded_img = get_encoded_img(filepath)
 
             return render_template('index.html', 
                                 image_data=encoded_img,
@@ -120,5 +154,22 @@ def index():
 
     return render_template('index.html')
 
+@app.route('/history')
+def history():
+    data = []
+    with open('./static/hfmd_detection_results.csv', 'r') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            data.append(row)
+
+    return render_template('history.html', data=data)
+
+
+@app.route('/chatbot')
+def chatbot():
+    return render_template('chatbot.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
+
+

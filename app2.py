@@ -9,6 +9,7 @@ import base64
 from io import BytesIO
 from PIL import Image
 import csv
+import re
 
 app = Flask(__name__)
 
@@ -19,6 +20,7 @@ if not os.path.exists(UPLOAD_FOLDER):
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
 # Load the model
 model = tf.keras.models.load_model('./static/my_model.h5')
@@ -28,6 +30,26 @@ RESULT_CSV_FILE = './static/hfmd_detection_results.csv'
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def save_base64_image(base64_string):
+    # Remove data URL prefix if present
+    if 'data:image' in base64_string:
+        base64_string = re.sub('^data:image/.+;base64,', '', base64_string)
+    
+    # Decode base64 string
+    img_data = base64.b64decode(base64_string)
+    
+    # Create PIL Image
+    img = Image.open(BytesIO(img_data))
+    
+    # Generate filename with timestamp
+    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    filename = f"camera_{timestamp}.jpg"
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    
+    # Save image
+    img.save(filepath, 'JPEG')
+    return filepath, filename
 
 def preprocess_image(img_path, target_size=(224, 224)):
     img = image.load_img(img_path, target_size=target_size)
@@ -113,46 +135,60 @@ def save_detection_result(filename, result_type, confidence, severity):
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        if 'file' not in request.files:
-            return render_template('index.html', error="No file part")
+        # Check if the post request has the file part
+        if 'file' not in request.files and 'image_data' not in request.form:
+            return render_template('index2.html', error="No image uploaded")
 
-        file = request.files['file']
-        
-        if file.filename == '':
-            return render_template('index.html', error="No selected file")
+        if 'image_data' in request.form and request.form['image_data']:
+            # Handle camera capture
+            try:
+                filepath, filename = save_base64_image(request.form['image_data'])
+            except Exception as e:
+                return render_template('index2.html', error=f"Error processing camera image: {str(e)}")
+        else:
+            # Handle file upload
+            file = request.files['file']
+            if file.filename == '':
+                return render_template('index2.html', error="No selected file")
 
-        if file and allowed_file(file.filename):
-            # Save the file
-            timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+            if not file or not allowed_file(file.filename):
+                return render_template('index2.html', error="Invalid file type")
+
+            # Save the uploaded file
             filename = secure_filename(file.filename)
-            file_up_name = f"{timestamp}_{filename}"
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], file_up_name)
+            timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+            filename = f"{timestamp}_{filename}"
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(filepath)
 
-            # Preprocess and predict
+        # Process the image and make prediction
+        try:
             preprocessed_img = preprocess_image(filepath)
             predictions = model.predict(preprocessed_img)
             predicted_class = (predictions >= 0.5).astype(int)[0][0]
             confidence = predictions[0][0]
 
-            # Get detailed explanation based on prediction
+            # Get detailed explanation
             explanation = get_hfmd_explanation(confidence)
             result_type = 'HFMD' if predicted_class == 1 else 'Non-HFMD'
             detailed_result = explanation[result_type]
 
-            # Save the detection result to the CSV
-            save_detection_result(file_up_name, result_type, f"{confidence * 100:.2f}%", detailed_result['severity'])
+            # Save detection result
+            save_detection_result(filename, result_type, f"{confidence * 100:.2f}%", detailed_result['severity'])
 
-            # Get the encoded image for display
+            # Get encoded image for display
             encoded_img = get_encoded_img(filepath)
 
-            return render_template('index.html', 
+            return render_template('index2.html',
                                 image_data=encoded_img,
                                 result=result_type,
                                 confidence=f"{confidence * 100:.2f}%",
                                 detailed_result=detailed_result)
 
-    return render_template('index.html')
+        except Exception as e:
+            return render_template('index2.html', error=f"Error processing image: {str(e)}")
+
+    return render_template('index2.html')
 
 @app.route('/history')
 def history():
@@ -163,6 +199,10 @@ def history():
             data.append(row)
 
     return render_template('history.html', data=data)
+
+@app.route('/chatbot')
+def chatbot():
+    return render_template('chatbot.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
