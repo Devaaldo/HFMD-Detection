@@ -76,6 +76,8 @@ hfmd-detection/
 │
 ├── templates/           # Template HTML
 │   └── index.html
+│   └── chatbot.html
+│   └── history.html
 │
 └── uploads/            # Folder untuk menyimpan gambar yang diupload
 ```
