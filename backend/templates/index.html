@@ -1,0 +1,25 @@
+
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>HFMD Detection System</title>
+                <style>
+                    body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+                    h1 { color: #0066cc; }
+                    .container { margin-top: 30px; }
+                </style>
+            </head>
+            <body>
+                <h1>HFMD Detection System</h1>
+                <p>This is a simple API server for HFMD detection. Use POST requests to upload endpoint to detect HFMD from images.</p>
+                
+                <div class="container">
+                    <h2>Upload Form</h2>
+                    <form action="/" method="post" enctype="multipart/form-data">
+                        <input type="file" name="file" accept="image/*">
+                        <button type="submit">Upload & Detect</button>
+                    </form>
+                </div>
+            </body>
+            </html>
+            
