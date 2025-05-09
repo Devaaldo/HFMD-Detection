@@ -1,121 +1,124 @@
 # HFMD Detection System
 
-## Overview
-HFMD Detection System adalah aplikasi berbasis web yang dikembangkan menggunakan Flask dan TensorFlow untuk mendeteksi Hand, Foot, and Mouth Disease (HFMD) melalui analisis gambar. Sistem ini menggunakan arsitektur ResNet50 yang telah dilatih khusus untuk mengenali karakteristik HFMD.
+Sistem deteksi Hand, Foot, and Mouth Disease (HFMD) menggunakan machine learning dengan frontend Next.js dan backend Flask.
 
-## Fitur
-- Upload gambar untuk deteksi HFMD
-- Preprocessing gambar otomatis
-- Visualisasi hasil deteksi
-- Penjelasan detail hasil diagnosis
-- Rekomendasi tindak lanjut
-- Indikator tingkat keparahan
-- Interface yang user-friendly
+## Struktur Proyek
 
-## Teknologi yang Digunakan
-- Python 3.8+
-- Flask (Web Framework)
-- TensorFlow 2.x
-- ResNet50 (Pre-trained Model)
-- HTML/CSS
-- Bootstrap (Styling)
+Proyek ini terdiri dari dua bagian utama:
 
-## Persyaratan Sistem
-- Python 3.8 atau versi lebih baru
-- Pip (Python package installer)
-- Virtual Environment
-- Minimal RAM 4GB
-- Ruang disk kosong minimal 2GB
+1. **Frontend (Next.js dengan Tailwind CSS)**
 
-## Instalasi
+   - Modern UI dengan komponen yang responsif
+   - Upload gambar dan visualisasi hasil
+   - Halaman riwayat deteksi
+   - Chatbot untuk informasi HFMD
 
-### 1. Clone Repository
+2. **Backend (Flask Python)**
+   - API untuk klasifikasi gambar menggunakan model ML
+   - Penyimpanan data hasil deteksi
+   - Manajemen file dan upload
+   - Logika chatbot sederhana
+
+## Prasyarat
+
+Pastikan Anda telah menginstal:
+
+- Node.js (versi 14 atau lebih baru)
+- Python 3.8 atau lebih baru
+- pip (Python package manager)
+
+## Instalasi dan Menjalankan Aplikasi
+
+### 1. Menyiapkan Backend Flask
+
 ```bash
-git clone https://github.com/yourusername/hfmd-detection.git
-cd hfmd-detection
-```
+# Clone repositori (jika menggunakan git)
+git clone [URL_REPO]
+cd hfmd-detection-system
 
-### 2. Membuat Virtual Environment
-Untuk Windows:
-```bash
+# Buat virtual environment Python
 python -m venv venv
+
+# Aktifkan virtual environment
+# Untuk Windows
 venv\Scripts\activate
-```
-
-Untuk Linux/Mac:
-```bash
-python3 -m venv venv
+# Untuk macOS/Linux
 source venv/bin/activate
-```
 
-### 3. Instalasi Dependencies
-```bash
-pip install -r requirements.txt
-```
+# Instal dependensi Python
+pip install flask flask-cors tensorflow pillow werkzeug numpy
 
-Atau install manual satu persatu:
-```bash
-pip install flask
-pip install tensorflow
-pip install pillow
-pip install numpy
-pip install werkzeug
-```
+# Pastikan folder untuk menyimpan upload tersedia
+mkdir -p static/uploads
 
-## Struktur Direktori
-```
-hfmd-detection/
-│
-├── app.py                 # File utama aplikasi Flask
-├── my_model.h5           # Model ResNet50 yang telah dilatih
-├── requirements.txt      # Daftar dependencies
-├── README.md            # Dokumentasi
-│
-├── static/              # Asset statis (CSS, JS, dll)
-│   └── style.css
-│
-├── templates/           # Template HTML
-│   └── index.html
-│   └── chatbot.html
-│   └── history.html
-│
-└── uploads/            # Folder untuk menyimpan gambar yang diupload
-```
-
-## Cara Penggunaan
-
-### 1. Menjalankan Aplikasi
-Setelah mengaktifkan virtual environment:
-```bash
+# Jalankan backend Flask
 python app.py
 ```
-Aplikasi akan berjalan di `http://localhost:5000`
 
-### 2. Menggunakan Sistem
-1. Buka browser dan akses `http://localhost:5000`
-2. Klik tombol "Choose File" untuk memilih gambar
-3. Pilih gambar yang ingin dianalisis (format: jpg, jpeg, atau png)
-4. Klik "Upload dan Deteksi"
-5. Sistem akan memproses gambar dan menampilkan hasil:
-   - Hasil deteksi (HFMD/Non-HFMD)
-   - Tingkat keyakinan (confidence level)
-   - Penjelasan detail
-   - Rekomendasi tindak lanjut
+Backend akan berjalan di http://localhost:5000
 
-## Model ResNet50
+### 2. Menyiapkan Frontend Next.js
 
-### Arsitektur Model
-Model yang digunakan adalah ResNet50 yang telah dimodifikasi untuk deteksi HFMD:
-- Input layer: 224x224x3
-- ResNet50 base model (pre-trained pada ImageNet)
-- Custom top layers untuk klasifikasi biner
-- Output layer dengan aktivasi sigmoid
+```bash
+# Buka terminal baru, navigasi ke folder proyek
+cd hfmd-detection-nextjs
 
-### Preprocessing Gambar
-Sebelum diproses oleh model, gambar akan melalui tahapan preprocessing:
-1. Resize ke ukuran 224x224 pixel
-2. Normalisasi pixel values (0-1)
-3. Ekspansi dimensi untuk batch processing
+# Instal dependensi Node.js
+npm install
 
+# Jalankan server development
+npm run dev
+```
 
+Frontend akan berjalan di http://localhost:3000
 
+## Fitur
+
+### Halaman Beranda
+
+- Upload gambar untuk deteksi HFMD
+- Visualisasi hasil dengan penjelasan rinci
+- Indikator kepercayaan deteksi
+- Informasi tentang HFMD
+
+### Halaman Riwayat
+
+- Daftar semua deteksi sebelumnya
+- Filter dan pencarian hasil
+- Visualisasi data dan statistik
+
+### Fitur Chatbot
+
+- Tanya jawab tentang HFMD
+- Informasi tentang gejala, pengobatan, dan pencegahan
+- Panduan pertanyaan populer
+
+## Pemeliharaan Model
+
+Model ML yang digunakan dalam sistem ini tersimpan di `./static/my_model.h5`. Untuk memperbarui model:
+
+1. Latih model baru menggunakan dataset yang diperbarui
+2. Simpan model dalam format .h5
+3. Ganti file model yang ada dengan model baru
+4. Restart backend Flask
+
+## Pengembangan Lanjutan
+
+Untuk pengembangan lebih lanjut, Anda dapat:
+
+1. Menambahkan otentikasi pengguna
+2. Meningkatkan kemampuan chatbot dengan NLP
+3. Menambahkan analitik dan dashboard untuk dokter
+4. Mengembangkan fitur notifikasi dan pengingat
+5. Integrasi dengan sistem rekam medis elektronik
+
+## Teknologi yang Digunakan
+
+- **Frontend**: Next.js, React, Tailwind CSS, Axios
+- **Backend**: Flask, TensorFlow, NumPy
+- **Penyimpanan Data**: CSV (bisa dikembangkan ke database SQL/NoSQL)
+- **Pengolahan Gambar**: TensorFlow, Pillow
+
+## Lisensi
+
+[Masukkan informasi lisensi proyek Anda]

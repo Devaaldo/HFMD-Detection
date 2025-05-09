@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify, send_from_directory
+from flask_cors import CORS
 import os
 from datetime import datetime
 import tensorflow as tf
@@ -9,8 +10,10 @@ import base64
 from io import BytesIO
 from PIL import Image
 import csv
+import json
 
 app = Flask(__name__)
+CORS(app)  # Aktifkan CORS untuk integrasi dengan Next.js
 
 # Configuration
 UPLOAD_FOLDER = 'static/uploads'
@@ -109,17 +112,18 @@ def save_detection_result(filename, result_type, confidence, severity):
         })
 
     print(f"Detection result saved to {RESULT_CSV_FILE}")
+    return detection_id
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
         if 'file' not in request.files:
-            return render_template('index.html', error="No file part")
+            return jsonify({"error": "No file part"}), 400
 
         file = request.files['file']
         
         if file.filename == '':
-            return render_template('index.html', error="No selected file")
+            return jsonify({"error": "No selected file"}), 400
 
         if file and allowed_file(file.filename):
             # Save the file
@@ -141,35 +145,83 @@ def index():
             detailed_result = explanation[result_type]
 
             # Save the detection result to the CSV
-            save_detection_result(file_up_name, result_type, f"{confidence * 100:.2f}%", detailed_result['severity'])
+            detection_id = save_detection_result(file_up_name, result_type, f"{confidence * 100:.2f}%", detailed_result['severity'])
 
             # Get the encoded image for display
             encoded_img = get_encoded_img(filepath)
 
-            return render_template('index.html', 
-                                image_data=encoded_img,
-                                result=result_type,
-                                confidence=f"{confidence * 100:.2f}%",
-                                detailed_result=detailed_result)
+            # Return JSON response for Next.js frontend
+            return jsonify({
+                "id": detection_id,
+                "image_data": encoded_img,
+                "result": result_type,
+                "confidence": f"{confidence * 100:.2f}%",
+                "detailed_result": detailed_result,
+                "filename": file_up_name
+            })
 
+    # Return template for HTML version (fallback)
     return render_template('index.html')
 
-@app.route('/history')
+@app.route('/history', methods=['GET'])
 def history():
-    data = []
-    with open('./static/hfmd_detection_results.csv', 'r') as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-            data.append(row)
+    try:
+        data = []
+        if os.path.exists(RESULT_CSV_FILE):
+            with open(RESULT_CSV_FILE, 'r') as csvfile:
+                reader = csv.DictReader(csvfile)
+                for row in reader:
+                    data.append(row)
+        
+        # Return JSON data for API requests
+        if request.headers.get('Accept') == 'application/json' or request.args.get('format') == 'json':
+            return jsonify(data)
+        
+        # Return HTML for web browser requests
+        return render_template('history.html', data=data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-    return render_template('history.html', data=data)
+@app.route('/static/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
-
-@app.route('/chatbot')
+@app.route('/chatbot', methods=['GET', 'POST'])
 def chatbot():
+    if request.method == 'POST':
+        try:
+            data = request.get_json()
+            message = data.get('message', '')
+            
+            # Simple chatbot logic - in real implementation, this could be more sophisticated
+            responses = {
+                'hallo': 'Halo! Saya adalah HFMD Assistant. Ada yang bisa saya bantu tentang HFMD?',
+                'apa itu hfmd': 'HFMD (Hand, Foot, and Mouth Disease) adalah penyakit virus yang umum terjadi pada bayi dan anak-anak. Penyakit ini disebabkan oleh virus dalam kelompok enterovirus, terutama virus Coxsackie A16.',
+                'gejala': 'Gejala HFMD biasanya dimulai dengan demam, sakit tenggorokan, dan kehilangan nafsu makan. Setelah 1-2 hari, akan muncul luka di mulut dan ruam tidak gatal di tangan, kaki, dan terkadang bokong.',
+                'pengobatan': 'Tidak ada pengobatan spesifik untuk HFMD. Perawatan berfokus pada meringankan gejala seperti obat pereda nyeri, menjaga cairan tubuh, dan istirahat yang cukup.',
+                'pencegahan': 'Pencegahan HFMD meliputi mencuci tangan secara teratur, menghindari kontak dekat dengan orang yang terinfeksi, dan membersihkan permukaan yang sering disentuh.',
+                'berapa lama': 'HFMD biasanya sembuh sendiri dalam waktu 7-10 hari tanpa pengobatan khusus.'
+            }
+            
+            response = 'Maaf, saya tidak mengerti pertanyaan Anda. Bisakah Anda bertanya tentang gejala HFMD, cara pencegahan, atau pengobatannya?'
+            
+            # Check if message contains any keywords
+            for key, value in responses.items():
+                if key in message.lower():
+                    response = value
+                    break
+            
+            return jsonify({"reply": response})
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+    
+    # Return HTML for GET requests
     return render_template('chatbot.html')
+
+# Add a simple healthcheck endpoint
+@app.route('/api/healthcheck', methods=['GET'])
+def healthcheck():
+    return jsonify({"status": "ok", "message": "HFMD Detection API is running"})
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
