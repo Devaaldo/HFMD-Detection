@@ -1,8 +1,10 @@
+"use client";
+
 import axios from "axios";
 
-// Create axios instance with default config
+// Buat instance axios dengan konfigurasi default
 const api = axios.create({
-	baseURL: "/api",
+	baseURL: "http://localhost:5000",
 	headers: {
 		"Content-Type": "application/json",
 	},
@@ -13,7 +15,7 @@ export const uploadImage = async (file) => {
 	formData.append("file", file);
 
 	try {
-		const response = await axios.post("/api/upload", formData, {
+		const response = await axios.post("http://localhost:5000/", formData, {
 			headers: {
 				"Content-Type": "multipart/form-data",
 			},
@@ -31,16 +33,6 @@ export const getHistory = async () => {
 		return response.data;
 	} catch (error) {
 		console.error("Error fetching history:", error);
-		throw error;
-	}
-};
-
-export const sendChatMessage = async (message) => {
-	try {
-		const response = await api.post("/chat", { message });
-		return response.data;
-	} catch (error) {
-		console.error("Error sending message:", error);
 		throw error;
 	}
 };

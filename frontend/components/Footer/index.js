@@ -1,3 +1,5 @@
+"use client";
+
 export default function Footer() {
 	return (
 		<footer className="bg-white shadow-inner">
@@ -8,7 +10,7 @@ export default function Footer() {
 					</p>
 					<div className="mt-2 md:mt-0">
 						<p className="text-gray-500 text-sm">
-							Powered by Next.js, Tailwind CSS, and Flask
+							Created by Muhammad Akbar Pradana & Bagas Dwi Santosa
 						</p>
 					</div>
 				</div>

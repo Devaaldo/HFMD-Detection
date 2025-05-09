@@ -1,13 +1,15 @@
+"use client";
+
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 import { HiMenu, HiX } from "react-icons/hi";
 
 export default function Navbar() {
 	const [isOpen, setIsOpen] = useState(false);
-	const router = useRouter();
+	const pathname = usePathname();
 
-	const isActive = (path) => router.pathname === path;
+	const isActive = (path) => pathname === path;
 
 	const navLinks = [
 		{ name: "Home", href: "/" },
@@ -70,6 +72,7 @@ export default function Navbar() {
 										? "bg-primary-50 text-primary-700"
 										: "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
 								}`}
+								onClick={() => setIsOpen(false)}
 							>
 								{link.name}
 							</Link>

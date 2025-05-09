@@ -1,9 +1,7 @@
+"use client";
+
 import { useState, useEffect, useRef } from "react";
-import {
-	HiPaperAirplane,
-	HiOutlineEmojiHappy,
-	HiOutlinePhotograph,
-} from "react-icons/hi";
+import { HiPaperAirplane, HiOutlineEmojiHappy } from "react-icons/hi";
 
 export default function ChatbotInterface() {
 	const [messages, setMessages] = useState([

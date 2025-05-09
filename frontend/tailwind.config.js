@@ -1,8 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
 	content: [
-		"./src/pages/**/*.{js,ts,jsx,tsx}",
-		"./src/components/**/*.{js,ts,jsx,tsx}",
+		"./app/**/*.{js,ts,jsx,tsx,mdx}",
+		"./components/**/*.{js,ts,jsx,tsx,mdx}",
 	],
 	theme: {
 		extend: {
@@ -34,9 +34,6 @@ module.exports = {
 				warning: "#f59e0b",
 				danger: "#ef4444",
 				success: "#10b981",
-			},
-			fontFamily: {
-				sans: ["Inter", "sans-serif"],
 			},
 		},
 	},

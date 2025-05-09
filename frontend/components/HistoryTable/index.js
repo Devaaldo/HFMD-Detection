@@ -1,5 +1,7 @@
+"use client";
+
 import { useState } from "react";
-import { HiDotsVertical, HiDownload, HiEye } from "react-icons/hi";
+import { HiDotsVertical, HiEye } from "react-icons/hi";
 
 export default function HistoryTable({ data }) {
 	const [detailId, setDetailId] = useState(null);
