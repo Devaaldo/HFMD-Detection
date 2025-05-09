@@ -118,7 +118,3 @@ Untuk pengembangan lebih lanjut, Anda dapat:
 - **Backend**: Flask, TensorFlow, NumPy
 - **Penyimpanan Data**: CSV (bisa dikembangkan ke database SQL/NoSQL)
 - **Pengolahan Gambar**: TensorFlow, Pillow
-
-## Lisensi
-
-[Masukkan informasi lisensi proyek Anda]
