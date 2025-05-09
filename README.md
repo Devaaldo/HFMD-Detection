@@ -34,7 +34,7 @@ Pastikan Anda telah menginstal:
 ```bash
 # Clone repositori (jika menggunakan git)
 git clone [URL_REPO]
-cd hfmd-detection-system
+cd backend
 
 # Buat virtual environment Python
 python -m venv venv
@@ -61,7 +61,7 @@ Backend akan berjalan di http://localhost:5000
 
 ```bash
 # Buka terminal baru, navigasi ke folder proyek
-cd hfmd-detection-nextjs
+cd frontend
 
 # Instal dependensi Node.js
 npm install
